@@ -22,30 +22,6 @@ WITH
       FROM `{bq_dataset}.ad_matching`
       GROUP BY 1
     ),
-    SitelinksAdGroupTable AS (
-      SELECT
-          campaign_id,
-          SUM(ARRAY_LENGTH(SPLIT(sitelinks, "|"))) AS n_ad_group_sitelinks
-      FROM `{bq_dataset}.sitelinks_ad_group`
-      GROUP BY 1
-    ),
-    SitelinksCampaignTable AS (
-      SELECT
-          campaign_id,
-          SUM(ARRAY_LENGTH(SPLIT(sitelinks, "|"))) AS n_campaign_sitelinks
-      FROM `{bq_dataset}.sitelinks_campaign`
-      GROUP BY 1
-    ),
-    SitelinksTable AS (
-      SELECT
-          campaign_id,
-          SUM(n_ad_group_sitelinks) + SUM (n_campaign_sitelinks) AS total_n_sitelinks
-      FROM SitelinksCampaignTable
-      FULL JOIN SitelinksAdGroupTable
-          USING(campaign_id)
-      GROUP BY 1
-    ),
-
     /* Audience Block */
     AudienceAdGroupTable AS (
         SELECT
@@ -256,26 +232,26 @@ WITH
           C.start_date AS start_date,
           C.end_date AS end_date,
           IF(CO.campaign_id > 0, TRUE, FALSE) AS has_auto_targeting,
-          IF(S.total_n_sitelinks > 0, TRUE, FALSE) AS has_sitelinks,
+          TRUE AS has_sitelinks,
           /* buckets */
           IFNULL(W.is_webpage_tracking, FALSE) AS conversions_bucket,
           IFNULL(B.bid_budget_ratio, "") AS budget_bid_ratio_bucket,
           IFNULL(T.is_audience_optimized, FALSE) AS audience_bucket,
           IF(
-        IFNULL(S.total_n_sitelinks, 0) > 0 OR IFNULL(A.n_ads, 0) >= 5,
-        "Creative >= 5 OR Has sitelink", "Creative < 5"
+              IFNULL(A.n_ads, 0) >= 5,
+              "Creative >= 5 OR Has sitelink", "Creative < 5"
           ) AS creatives_bucket,
           /* boolean flags */
           IFNULL(W.is_webpage_tracking, FALSE) AS is_conversions_optimized,
           IF(
-        B.bid_budget_ratio IN (">15", ">10"),
-        TRUE, FALSE) AS is_bid_budget_optimized,
+              B.bid_budget_ratio IN (">15", ">10"),
+              TRUE, FALSE
+          ) AS is_bid_budget_optimized,
           IFNULL(T.is_audience_optimized, FALSE) AS is_audience_optimized,
           IF(
-        IFNULL(S.total_n_sitelinks, 0) > 0 OR IFNULL(A.n_ads, 0) >= 5,
-        TRUE, FALSE
-          ) AS is_creative_optimized,
-          cost
+              IFNULL(A.n_ads, 0) >= 5, TRUE, FALSE
+         ) AS is_creative_optimized,
+         cost
          FROM `{bq_dataset}.campaign_settings` AS C
          LEFT JOIN WebPageConversionTrackingtable AS W
             USING(campaign_id)
@@ -284,9 +260,8 @@ WITH
             campaign_id,
             ANY_VALUE(bid_budget_ratio) AS bid_budget_ratio
             FROM BidBudgetTable
-            GROUP BY 1) AS B
-            USING(campaign_id)
-         LEFT JOIN SitelinksTable AS S
+            GROUP BY 1
+         ) AS B
             USING(campaign_id)
          LEFT JOIN AdsTable AS A
             USING(campaign_id)
