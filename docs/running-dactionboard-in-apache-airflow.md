@@ -29,7 +29,7 @@ default_args = {
 with DAG('dactionboard', default_args=default_args, schedule_interval="* 0 * * *", catchup=False) as dag:
     dactionboard = DockerOperator(
         task_id='dactionboard_docker',
-        image='ghcr.io/google/dactionboard:latest',
+        image='ghcr.io/google-marketing-solutions/dactionboard:latest',
         api_version='auto',
         auto_remove=True,
         command=[
