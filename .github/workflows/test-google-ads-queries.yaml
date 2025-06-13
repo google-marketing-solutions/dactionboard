@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [17, 18, 19]
+        version: [18, 19, 20]
     permissions:
       contents: read
       packages: write
