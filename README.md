@@ -5,7 +5,6 @@
 1. [Deliverables](#deliverables)
 1. [Prerequisites](#prerequisites)
 1. [Installation](#installation)
-    * [Primary Installation Method](#primary-installation-method)
     * [Manual installation in Google Cloud](#manual-installation-in-google-cloud)
     * [Gaarf Workflow Installation in Google Cloud](#gaarf-workflow-installation-in-google-cloud)
     * [Alternative Installation Methods](#alternative-installation-methods)
@@ -68,39 +67,6 @@ in your own infrastructure. In either way you need two things:
 * Google Ads API credentials (in `google-ads.yaml` or separately)
 * dActionBoard configuration (in `dactionboard.yaml`) - it can be generated via running `run-local.sh`.
 In order to run dActionBoard please follow the steps outlined below:
-
-### Primary Installation Method
-*Back to [table of content](#table-of-content)*
-
-The primary installation method deploys dActionBoard into Google Cloud by using Cloud Run Button.
-The procedure automates generating dActionBoard configuration and deploying all required components to the Cloud.
-
-This approach is the simplest one because it clones the repo and starts install scripts for you. But sometimes you might need some customization.
-The majority infrastructure settings can be changed in `gcp/settings.ini` file (regions, service names, etc).
-If it's a case for you please use the [Manual installation in Google Cloud](#manual-installation-in-google-cloud) below.
-
-To install the solution, follow these steps:
-
-1. Click "Run on Google Cloud"
-   [![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?dir=gcp/cloud-run-button)
-
-1. Select your GCP project and choose any region.
-
-1. When prompted, upload your `google-ads.yaml` (alternately you can paste in your client ID, client secret, refresh token, developer token and MCC ID later).
-
-1. The install script will generate dActionBoard configuration by asking some interactive questions and then deploy all cloud components in the current project
-
-1. At the end you will be given a link to a webpage on Cloud Storage where you can track the progress.
-
-1. This webpage will inform you once the BigQuery datasets have been populated and you can create a dashboard.
-When the button is enabled, click "Open Dashboard" to clone the dashboard template.
-Click the "Save" button on the top right to save your new dashboard.
-
-1. Change your dashboard's name and save it's URL or bookmark it.
-
-It's important to note that a Cloud Run service that is being built and deployed during installation isn't actually needed (it'll be removed at the end).
-All dActionBoard installation happens in a pre-build script.
-
 
 ### Manual installation in Google Cloud
 *Back to [table of content](#table-of-content)*
@@ -244,7 +210,7 @@ sudo docker run \
    -v /path/to/google-ads.yaml:/google-ads.yaml \
    -v /path/to/dactionboard.yaml:/config.yaml \
    -v /path/to/service_account.json:/service_account.json \
-   ghcr.io/google/dactionboard
+   ghcr.io/google-marketing-solutions/dactionboard
 
 ```
 where:
@@ -260,7 +226,7 @@ You can provide configs as remote (for example Google Cloud Storage):
 sudo docker run  \
   -e GOOGLE_CLOUD_PROJECT="project_name" \
   -v /path/to/service_account.json:/service_account.json \
-  ghcr.io/google/dactionboard \
+  ghcr.io/google-marketing-solutions/dactionboard \
   gs://project_name/google-ads.yaml \
   gs://project_name/dactionboard.yaml
 ```
