@@ -1,5 +1,11 @@
 # dActionBoard - Video Action Campaigns Reporting
 
+> [!IMPORTANT]
+> In April 2025 the ability to create new Video Action Campaigns was removed.
+> We recommend using Demand Gen as an alternative to Video Action Campaigns.
+> You can use [DemandGen Pulse](https://github.com/google-marketing-solutions/dgpulse)
+> dashboard to get reporting on Demand Gen campaigns.
+
 ## Table of Content
 1. [Introduction](#introduction)
 1. [Deliverables](#deliverables)
